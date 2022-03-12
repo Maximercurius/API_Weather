@@ -8,7 +8,14 @@
 
 import Foundation
 
-struct NetworkWeatherManager {
+protocol NetworkWeatherManagerDelegate: class {
+    func updateInterface(_: NetworkWeatherManager, with currentWeather: CurrentWeather)
+    
+}
+
+class NetworkWeatherManager {
+    
+  weak var delegate: NetworkWeatherManagerDelegate?
     
     var onCompletion: ((CurrentWeather) -> Void)?
     
@@ -19,7 +26,8 @@ struct NetworkWeatherManager {
         let task = session.dataTask(with: url) { data, response,error in
             if let data = data {
                 if let currentWeather = self.parseJSON(withData: data) {
-                    self.onCompletion?(currentWeather)
+                    //self.onCompletion?(currentWeather)
+                    self.delegate?.updateInterface(self, with: currentWeather)
                 }
                     
             }
